@@ -27,7 +27,7 @@
 |:-- |:-- | 
 |路由|`react-router-dom`| 
 |http库| `axios`| 
-|状态管理| `redux | react-redux` | 
+|状态管理| `redux  react-redux` | 
 |预编译css| `less`| 
 |... |... | 
 
