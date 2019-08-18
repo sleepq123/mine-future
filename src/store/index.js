@@ -1,10 +1,13 @@
-import { createState, combineReducers } from 'redux';
+/** 全局状态管理 */
+import { createStore, combineReducers } from 'redux';
+import userInfo from './userInfo';
 import reducer01  from './reducer01';
 
 const reducers = combineReducers({
-    reducer01
+    userInfo,
+    reducer01,
 })
 
-const store = createState(reducers);
+const store = createStore(reducers);
 
 export default store;
