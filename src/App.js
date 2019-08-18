@@ -3,6 +3,7 @@ import { Router } from 'react-router-dom';
 import { createBrowserHistory } from 'history';
 import Routes from '@src/route';
 import { Provider } from 'react-redux';
+import store from '@src/store';
 import { ConfigProvider } from 'antd';
 import zhCN from 'antd/es/locale/zh_CN';
 import moment from 'moment';
@@ -16,7 +17,7 @@ const history = createBrowserHistory();
 function App() {
   return (
     <ConfigProvider locale={zhCN}>
-      <Provider>
+      <Provider store={store}>
         <Router history={history}>
           <Routes />
         </Router>
