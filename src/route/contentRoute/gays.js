@@ -1,8 +1,9 @@
 import React from 'react';
 import { Switch, Route } from 'react-router-dom';
+import Gays from '@src/pages/Gays';
 
 export default () => (
   <Switch>
-    <Route path="/content02/default" component={() => <h1>content02</h1>} />
+    <Route path="/" component={Gays} />
   </Switch>
 );
