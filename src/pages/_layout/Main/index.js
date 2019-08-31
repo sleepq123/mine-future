@@ -16,14 +16,16 @@ class Main extends React.Component {
           <Menu
             theme="dark"
             mode="horizontal"
-            defaultSelectedKeys={['2']}
+            defaultSelectedKeys={[this.props.location.pathname]}
             style={{ lineHeight: '64px' }}
           >
-            <Menu.Item key="1"><Link to="/home">首页</Link> </Menu.Item>
-            <Menu.Item key="2"><Link to="/blog">博客</Link> </Menu.Item>
-            <Menu.Item key="3"><Link to="/share">分享</Link></Menu.Item>
-            <Menu.Item key="4"><Link to="/about">关于我</Link></Menu.Item>
-            <Menu.Item key="5"><Link to="/gays">友情链接</Link></Menu.Item>
+            {console.log(this.props)
+            }
+            <Menu.Item key="/home"><Link to="/home">首页</Link> </Menu.Item>
+            <Menu.Item key="/blog"><Link to="/blog">博客</Link> </Menu.Item>
+            <Menu.Item key="/share"><Link to="/share">分享</Link></Menu.Item>
+            <Menu.Item key="/about"><Link to="/about">关于我</Link></Menu.Item>
+            <Menu.Item key="/gays"><Link to="/gays">友情链接</Link></Menu.Item>
           </Menu>
         </Header>
         <Content style={{ padding: '0 3%', marginTop: 64 }}>
