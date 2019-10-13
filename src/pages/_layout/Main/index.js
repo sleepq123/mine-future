@@ -8,6 +8,18 @@ const { Header, Content, Footer } = Layout;
 
 @withRouter
 class Main extends React.Component {
+  state = {
+    pathNames: [],
+  }
+  componentDidMount() {
+    this.getPathNames();
+  }
+  getPathNames() {
+    console.log(this.props);
+    const { pathname } = this.props.location;
+    console.log(pathname.split('/').shi);
+    
+  }
   render() {
     return (
       <Layout>
@@ -19,8 +31,6 @@ class Main extends React.Component {
             defaultSelectedKeys={[this.props.location.pathname]}
             style={{ lineHeight: '64px' }}
           >
-            {console.log(this.props)
-            }
             <Menu.Item key="/home"><Link to="/home">首页</Link> </Menu.Item>
             <Menu.Item key="/blog"><Link to="/blog">博客</Link> </Menu.Item>
             <Menu.Item key="/share"><Link to="/share">分享</Link></Menu.Item>
@@ -28,13 +38,12 @@ class Main extends React.Component {
             <Menu.Item key="/gays"><Link to="/gays">友情链接</Link></Menu.Item>
           </Menu>
         </Header>
-        <Content style={{ padding: '0 3%', marginTop: 64 }}>
+        <Content style={{ padding: '0 3%', marginTop: '64px' }}>
           <Breadcrumb style={{ margin: '16px 0' }}>
-            {pathNames.map((item) => {
-              return <Breadcrumb.Item key={item.name}>{item.name}</Breadcrumb.Item>
-            })}
+              <Breadcrumb.Item key="index">首页</Breadcrumb.Item>
+              {/* <Breadcrumb.Item key={path.name}>{item.name}</Breadcrumb.Item> */}
           </Breadcrumb>
-          <div style={{ background: '#fff', padding: 24, minHeight: 380 }}>{this.props.content}</div>
+          <div style={{ background: '#fff', padding: '24px', minHeight: '500px' }}>{this.props.content}</div>
         </Content>
         <Footer style={{ textAlign: 'center' }}>浙ICP备17047793号-1 ©2019 Created sleepq123</Footer>
       </Layout>

@@ -2,7 +2,7 @@
 import Axios from 'axios';
 import Qs from 'qs';
 import { message } from 'antd';
-import { history } from '@src/app';
+import { history } from '@src/App';
 
 export const baseURL = process.env.targetUrl || '/proxy';
 
@@ -29,7 +29,7 @@ const httpInstance = Axios.create({
  * 2000	没有权限	
  */
 // 添加响应请求拦截器
-axios.interceptors.response.use((res) => {
+httpInstance.interceptors.response.use((res) => {
     if (res.responseType === 'blod') return res;
     switch (res.data.code) {
         case 1001:

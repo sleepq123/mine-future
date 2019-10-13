@@ -12,7 +12,7 @@ import 'antd/dist/antd.css';
 
 moment.locale('zh-cn');
 
-const history = createBrowserHistory();
+export const history = createBrowserHistory();
 
 function App() {
   return (
