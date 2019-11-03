@@ -1,12 +1,8 @@
-import requst from '@src/uitls/http';
+import { getApiData } from '@src/uitls/tool';
 
-const apiData  = {
-    login: (params) => {
-        requst.post('/user/login', params);
-    },
-    userList: (params) => {
-        requst.post('/user/list', params);
-    }
+const user  = {
+    login: '/user/login',
+    userList: '/user/list',
 };
-
-export default apiData;
+ 
+export default getApiData(user);

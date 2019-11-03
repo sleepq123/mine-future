@@ -1,23 +1,16 @@
-/** 封装http库的地方 */
-import Axios from 'axios';
-import Qs from 'qs';
-import { message } from 'antd';
-import { history } from '@src/App';
+import axios from 'axios'
+import { message } from 'antd'
+import { history } from '@src/App.js'
 
-export const baseURL = process.env.targetUrl || '/proxy';
+const TARGETURL = process.env.VUE_APP_TARGETURL || '/proxy'
+const baseURL = TARGETURL.trim()
 
-const getToken = (name = 'token') => window.localStorage.getItem(name);
-
-// 创建自定义axios实例
-const httpInstance = Axios.create({
+const request = {}
+const instance = axios.create({
     baseURL,
-    headers: { 'Content-type': 'application/json;charset=UTF-8' },
-    transformRequest: [(data, headers) => {
-        return JSON.stringify(data);
-    },],
-    responseType: 'json',
-    paramsSerializer: function (params) {
-        return Qs.stringify(params, { arrayFormat: 'brackets' })
+    headers: {
+        'Content-Type': 'application/json;charset=UTF-8',
+        'Authorization': localStorage.getItem('token') || sessionStorage.getItem('token'),
     },
 })
 
@@ -28,49 +21,110 @@ const httpInstance = Axios.create({
  * 1005	返回错误	
  * 2000	没有权限	
  */
-// 添加响应请求拦截器
-httpInstance.interceptors.response.use((res) => {
-    if (res.responseType === 'blod') return res;
-    switch (res.data.code) {
-        case 1001:
-            return res;
-        case 1003:
-            localStorage.removeItem('token');
-            history.push('/login');
-            break;
-        default:
-            message.error(res.data.msg);
-            break;
-    }
 
-    return res;
-}, function (error) {
-    return Promise.reject(error);
+// 防止发送多次请求
+const CancelToken = axios.CancelToken; // 取消请求
+let pending = [];
+
+instance.interceptors.request.use((config) => {
+    config.headers.Authorization = localStorage.getItem('token') || sessionStorage.getItem('token')
+
+    console.log(pending);
+    
+    const cancelFlag = pending.some((item) => {
+        return item === config.url;
+    });
+
+    if (!cancelFlag) {
+        pending.push(config.url);
+    } else {        
+        let cancel;
+        config.cancelToken = new CancelToken((c) => {
+            cancel = c;
+        });
+        
+        cancel(); // 取消请求
+    }
+    return config;
+})
+instance.interceptors.response.use((res) => {
+    pending = pending.filter((item) => {
+        return baseURL + item !== res.config.url;
+    })
+    
+    if (res.data.code === 1003 || res.data.code === 2000) {
+        message.error(res.data.msg)
+        setTimeout(() => {
+            history.push('/login')
+        }, 200)
+    } else if (res.data.code === 1001) {
+        return res.data
+    } else if (res.data instanceof Blob) {
+        return res
+    } else {
+        message.error(res.data.msg)
+        return Promise.reject(res.data)
+    }
+}, (error) => {
+    // 返回接口返回的错误信息
+    return Promise.reject(error)
+})
+
+request.get = async (url, params) => await instance.get(url, { params })
+
+request.post = async (url, params) => {
+    return await instance.post(url, params)
+}
+
+const uploader = axios.create({
+    baseURL,
+    headers: {
+        'Content-Type': 'multipart/form-data',
+        'Authorization': localStorage.getItem('token') || sessionStorage.getItem('token'),
+    },
+    validateStatus: () => true,
+    responseType: 'json',
+})
+
+uploader.interceptors.request.use((config) => {
+    config.headers = {
+        'Authorization': localStorage.getItem('token') || sessionStorage.getItem('token'),
+    }
+    return config;
 });
 
-
-const request = {};
-
-request.get = (url, data = {}, config = {}) => {
-    config.header = {
-        ...config.header,
-        'Authorization': getToken(),
-    };
-    httpInstance.get(url, data, config)
-        .then(res => res.data
-        )
+request.postfile = async (url, params) => {
+    const res = await uploader.post(url, params)
+    if (res.data.code === 1001) {
+        return res.data
+    } else {
+        message.error(res.data.msg)
+        return Promise.reject(res.data)
+    }
 }
 
-request.post = (url, data = {}, config = {}) => {
-    config.header = {
-        ...config.header,
-        'Authorization': getToken(),
-    };
-    httpInstance.post(url, data, config)
-        .then((res) => {
-            return config.responseType === 'blod' ? res : res.data;
-        })
-
+/** 导出excel */
+request.fileExport = (url, fileName, params) => {
+    return instance.post(url, params, {
+        responseType: 'blob',
+        isBlobRequest: true,
+    }).then((res) => {
+        const content = res.data
+        const blob = new Blob([content])
+        if ('download' in document.createElement('a')) { // 非IE下载
+            const elink = document.createElement('a')
+            elink.download = fileName
+            elink.style.display = 'none'
+            elink.href = URL.createObjectURL(blob)
+            document.body.appendChild(elink)
+            elink.click()
+            URL.revokeObjectURL(elink.href) // 释放URL 对象
+            document.body.removeChild(elink)
+        } else { // IE10+下载
+            navigator.msSaveBlob(blob, fileName)
+        }
+    }).catch(e => console.error(e));
 }
 
-export default request;
+export { baseURL }
+export default request

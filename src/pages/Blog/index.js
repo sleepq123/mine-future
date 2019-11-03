@@ -1,5 +1,10 @@
 import React from 'react'
-import apiData from '@src/api/user';
+import apiData from '@src/api/user'
+import { Link } from 'react-router-dom'
+import { Steps, Divider } from 'antd'
+import BlogInfo from './blogInfo'
+
+const { Step } = Steps
 
 class Blog extends React.Component{
     componentDidMount() {
@@ -19,7 +24,18 @@ class Blog extends React.Component{
         }
     }
     render(){
-        return <h1>博客</h1>
+        return (<div>
+            <Divider />
+            <Steps progressDot current={1} direction="vertical">
+              <Step title="Finished" description="This is a description. This is a description." />
+              <Step title="Finished" description="This is a description. This is a description." />
+              <Step title="In Progress" description="This is a description. This is a description." />
+              <Step title="Waiting" description="This is a description." />
+              <Step title="Waiting" description="This is a description." />
+            </Steps>
+            <Link to="/blog/info/2">跳转</Link>
+
+          </div>)
     }
 }
 
